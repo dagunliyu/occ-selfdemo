@@ -11,6 +11,7 @@
 #include <sstream>
 #include <iomanip>
 #include <vector>
+#include <cmath>
 #include <BRepPrimAPI_MakeBox.hxx>
 #include <BRepPrimAPI_MakeCylinder.hxx>
 #include <BRepPrimAPI_MakeSphere.hxx>
@@ -34,14 +35,6 @@
 #include <BRepAdaptor_Surface.hxx>
 #include <Geom_Surface.hxx>
 #include <Standard_TypeDef.hxx>
-#include <V3d_Viewer.hxx>
-#include <AIS_InteractiveContext.hxx>
-#include <AIS_Shape.hxx>
-#include <OpenGl_GraphicDriver.hxx>
-#include <WNT_Window.hxx>
-#include <V3d_View.hxx>
-#include <windows.h>
-#include <AIS_ColoredShape.hxx>
 
 // FreeCAD风格的拓扑元素命名类
 // FreeCAD使用形如 "Face1", "Edge3" 等的名称，但内部使用几何哈希保证稳定性
@@ -53,6 +46,20 @@ private:
     int faceCounter;
     int edgeCounter;
     int vertexCounter;
+    
+    // 将浮点数舍入到固定精度以确保哈希稳定性
+    // 这避免了浮点精度差异导致相同几何产生不同哈希的问题
+    double RoundForHash(double value, double precision = 1e-6) const
+    {
+        return std::round(value / precision) * precision;
+    }
+    
+    // 计算浮点数的稳定哈希
+    size_t HashDouble(double value) const
+    {
+        double rounded = RoundForHash(value);
+        return std::hash<double>{}(rounded);
+    }
     
     // 计算面的几何哈希（基于面积、中心点、法向）
     size_t ComputeFaceHash(const TopoDS_Face& face)
@@ -72,19 +79,19 @@ private:
         GeomAbs_SurfaceType surfType = surface.GetType();
         
         // 组合哈希值
-        hash ^= std::hash<double>{}(area);
-        hash ^= std::hash<double>{}(center.X()) << 1;
-        hash ^= std::hash<double>{}(center.Y()) << 2;
-        hash ^= std::hash<double>{}(center.Z()) << 3;
+        hash ^= HashDouble(area);
+        hash ^= HashDouble(center.X()) << 1;
+        hash ^= HashDouble(center.Y()) << 2;
+        hash ^= HashDouble(center.Z()) << 3;
         hash ^= std::hash<int>{}(static_cast<int>(surfType)) << 4;
         
         // 如果是平面，添加法向信息
         if (surfType == GeomAbs_Plane)
         {
             gp_Dir normal = surface.Plane().Axis().Direction();
-            hash ^= std::hash<double>{}(normal.X()) << 5;
-            hash ^= std::hash<double>{}(normal.Y()) << 6;
-            hash ^= std::hash<double>{}(normal.Z()) << 7;
+            hash ^= HashDouble(normal.X()) << 5;
+            hash ^= HashDouble(normal.Y()) << 6;
+            hash ^= HashDouble(normal.Z()) << 7;
         }
         
         return hash;
@@ -100,10 +107,10 @@ private:
         double length = props.Mass();
         gp_Pnt center = props.CentreOfMass();
         
-        hash ^= std::hash<double>{}(length);
-        hash ^= std::hash<double>{}(center.X()) << 1;
-        hash ^= std::hash<double>{}(center.Y()) << 2;
-        hash ^= std::hash<double>{}(center.Z()) << 3;
+        hash ^= HashDouble(length);
+        hash ^= HashDouble(center.X()) << 1;
+        hash ^= HashDouble(center.Y()) << 2;
+        hash ^= HashDouble(center.Z()) << 3;
         
         return hash;
     }
@@ -114,9 +121,9 @@ private:
         gp_Pnt pt = BRep_Tool::Pnt(vertex);
         size_t hash = 0;
         
-        hash ^= std::hash<double>{}(pt.X());
-        hash ^= std::hash<double>{}(pt.Y()) << 1;
-        hash ^= std::hash<double>{}(pt.Z()) << 2;
+        hash ^= HashDouble(pt.X());
+        hash ^= HashDouble(pt.Y()) << 1;
+        hash ^= HashDouble(pt.Z()) << 2;
         
         return hash;
     }
