@@ -1,5 +1,5 @@
 
-// Copyright © https://github.com/dagunliyu/occ-selfdemo
+// Copyright © https://github.com/cfd-dev/OCCT-demo
 
 // OCC拓扑命名问题演示
 // 本示例展示了OpenCASCADE中拓扑命名的概念和常见问题
@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <limits>
 #include <BRepPrimAPI_MakeBox.hxx>
 #include <BRepPrimAPI_MakeCylinder.hxx>
 #include <BRepAlgoAPI_Cut.hxx>
@@ -261,7 +262,7 @@ void VisualizeShape(const TopoDS_Shape& shape)
     try
     {
         // 初始化可视化系统
-        Handle(OpenGl_GraphicDriver) graphicDriver = new OpenGl_GraphicDriver(NULL);
+        Handle(OpenGl_GraphicDriver) graphicDriver = new OpenGl_GraphicDriver(nullptr);
         Handle(V3d_Viewer) viewer = new V3d_Viewer(graphicDriver);
         Handle(AIS_InteractiveContext) context = new AIS_InteractiveContext(viewer);
         
@@ -293,7 +294,7 @@ void VisualizeShape(const TopoDS_Shape& shape)
         
         // 创建3D视图
         HWND hwnd = GetConsoleWindow();
-        if (hwnd != NULL)
+        if (hwnd != nullptr)
         {
             Handle(WNT_Window) window = new WNT_Window(hwnd);
             Handle(V3d_View) view = viewer->CreateView();
@@ -309,7 +310,7 @@ void VisualizeShape(const TopoDS_Shape& shape)
             
             std::cout << "\n可视化窗口已创建。不同颜色代表不同的面。" << std::endl;
             std::cout << "按Enter键继续..." << std::endl;
-            std::cin.ignore();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }
     catch (...)
