@@ -53,6 +53,7 @@ add_executable(Proj3d proj3d.cpp)
 add_executable(ProjParallel ProjParallel.cpp)
 add_executable(TopoNaming topoNaming.cpp)
 add_executable(TopoNamingFreeCAD topoNamingFreeCAD.cpp)
+add_executable(ShapeSharing shapeSharing.cpp)
 
 #link
 target_link_libraries(Proj2d ${targetLib})
@@ -60,4 +61,5 @@ target_link_libraries(Proj3d ${targetLib})
 target_link_libraries(ProjParallel ${targetLib})
 target_link_libraries(TopoNaming ${targetLib})
 target_link_libraries(TopoNamingFreeCAD ${targetLib})
+target_link_libraries(ShapeSharing ${targetLib})
 
