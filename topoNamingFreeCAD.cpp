@@ -78,7 +78,8 @@ private:
         BRepAdaptor_Surface surface(face);
         GeomAbs_SurfaceType surfType = surface.GetType();
         
-        // 组合哈希值
+        // 组合哈希值，添加类型标识避免与边、顶点冲突
+        hash ^= std::hash<int>{}(1); // 类型标识：1=面
         hash ^= HashDouble(area);
         hash ^= HashDouble(center.X()) << 1;
         hash ^= HashDouble(center.Y()) << 2;
@@ -102,6 +103,9 @@ private:
     {
         size_t hash = 0;
         
+        // 添加类型标识避免与面、顶点冲突
+        hash ^= std::hash<int>{}(2); // 类型标识：2=边
+        
         GProp_GProps props;
         BRepGProp::LinearProperties(edge, props);
         double length = props.Mass();
@@ -118,8 +122,12 @@ private:
     // 计算顶点的几何哈希（基于坐标）
     size_t ComputeVertexHash(const TopoDS_Vertex& vertex)
     {
-        gp_Pnt pt = BRep_Tool::Pnt(vertex);
         size_t hash = 0;
+        
+        // 添加类型标识避免与面、边冲突
+        hash ^= std::hash<int>{}(3); // 类型标识：3=顶点
+        
+        gp_Pnt pt = BRep_Tool::Pnt(vertex);
         
         hash ^= HashDouble(pt.X());
         hash ^= HashDouble(pt.Y()) << 1;
@@ -143,7 +151,7 @@ public:
             const TopoDS_Face& face = TopoDS::Face(faces(i));
             size_t hash = ComputeFaceHash(face);
             
-            // 检查是否已经有这个几何的名称
+            // 检查是否已经有这个几何的名称（避免重复命名相同几何）
             if (hashToNameMap.find(hash) == hashToNameMap.end())
             {
                 std::ostringstream oss;
@@ -153,6 +161,7 @@ public:
                 hashToNameMap[hash] = name;
                 nameToShapeMap[name] = face;
             }
+            // 如果哈希已存在，说明是相同或非常相似的几何，使用已有名称
         }
         
         // 为所有边生成名称
@@ -164,6 +173,7 @@ public:
             const TopoDS_Edge& edge = TopoDS::Edge(edges(i));
             size_t hash = ComputeEdgeHash(edge);
             
+            // 检查是否已经有这个几何的名称（避免重复命名相同几何）
             if (hashToNameMap.find(hash) == hashToNameMap.end())
             {
                 std::ostringstream oss;
@@ -173,6 +183,7 @@ public:
                 hashToNameMap[hash] = name;
                 nameToShapeMap[name] = edge;
             }
+            // 如果哈希已存在，说明是相同或非常相似的几何，使用已有名称
         }
         
         // 为所有顶点生成名称
@@ -184,6 +195,7 @@ public:
             const TopoDS_Vertex& vertex = TopoDS::Vertex(vertices(i));
             size_t hash = ComputeVertexHash(vertex);
             
+            // 检查是否已经有这个几何的名称（避免重复命名相同几何）
             if (hashToNameMap.find(hash) == hashToNameMap.end())
             {
                 std::ostringstream oss;
@@ -193,6 +205,7 @@ public:
                 hashToNameMap[hash] = name;
                 nameToShapeMap[name] = vertex;
             }
+            // 如果哈希已存在，说明是相同或非常相似的几何，使用已有名称
         }
     }
     
