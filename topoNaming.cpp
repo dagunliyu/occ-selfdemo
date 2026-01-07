@@ -211,10 +211,6 @@ void DemonstrateTopologicalRelations()
     // 创建一个简单盒子
     TopoDS_Shape box = BRepPrimAPI_MakeBox(100.0, 100.0, 100.0).Shape();
     
-    // 构建拓扑关联映射：面->边
-    TopTools_IndexedDataMapOfShapeListOfShape faceEdgeMap;
-    TopExp::MapShapesAndAncestors(box, TopAbs_EDGE, TopAbs_FACE, faceEdgeMap);
-    
     std::cout << "面与边的关联关系：" << std::endl;
     TopTools_IndexedMapOfShape faces;
     TopExp::MapShapes(box, TopAbs_FACE, faces);
@@ -262,7 +258,7 @@ void VisualizeShape(const TopoDS_Shape& shape)
     try
     {
         // 初始化可视化系统
-        Handle(OpenGl_GraphicDriver) graphicDriver = new OpenGl_GraphicDriver(nullptr);
+        Handle(OpenGl_GraphicDriver) graphicDriver = new OpenGl_GraphicDriver(NULL);
         Handle(V3d_Viewer) viewer = new V3d_Viewer(graphicDriver);
         Handle(AIS_InteractiveContext) context = new AIS_InteractiveContext(viewer);
         
@@ -294,7 +290,7 @@ void VisualizeShape(const TopoDS_Shape& shape)
         
         // 创建3D视图
         HWND hwnd = GetConsoleWindow();
-        if (hwnd != nullptr)
+        if (hwnd != NULL)
         {
             Handle(WNT_Window) window = new WNT_Window(hwnd);
             Handle(V3d_View) view = viewer->CreateView();
