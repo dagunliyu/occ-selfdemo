@@ -42,7 +42,7 @@ OpenCASCADE是一个开源的3D建模内核，广泛应用于CAD/CAM/CAE领域�
 - 性能对比和加速比分析
 - 并行效率测试
 
-### 4. TopoNaming - 拓扑命名演示 ⭐ 新增
+### 4. TopoNaming - 拓扑命名演示
 **文件**: `topoNaming.cpp`
 
 演示了OpenCASCADE中的拓扑命名问题及其解决方法。
@@ -58,6 +58,28 @@ OpenCASCADE是一个开源的3D建模内核，广泛应用于CAD/CAM/CAE领域�
 - 拓扑命名问题是参数化CAD建模中的关键挑战
 - 形状修改后，索引可能改变，导致依赖操作失败
 - 通过几何特征识别可以提高稳定性
+
+### 5. TopoNamingFreeCAD - FreeCAD风格拓扑命名演示 ⭐ 最新
+**文件**: `topoNamingFreeCAD.cpp`
+
+演示了类似FreeCAD使用的基于几何哈希的拓扑命名机制。
+
+**主要功能**:
+- **几何哈希计算**: 基于面积、中心点、法向等几何特征计算唯一哈希
+- **稳定命名生成**: 为拓扑元素生成稳定的名称（Face1, Edge1等）
+- **命名追踪**: 通过几何哈希在形状修改后追踪相同的几何元素
+- **特征历史模拟**: 模拟FreeCAD的特征树（Feature Tree）机制
+- **布尔运算稳定性**: 展示命名在布尔运算中的稳定性
+
+**核心思想**:
+- 不使用简单索引，而是基于几何特征计算哈希
+- 相同几何 → 相同哈希 → 稳定命名
+- 类似FreeCAD的TNP（Topological Naming Problem）解决方案
+
+**三个演示场景**:
+1. **基本命名**: 展示相同几何得到相同哈希
+2. **布尔运算**: 展示运算后通过几何特征追踪元素
+3. **特征历史**: 模拟多步骤建模过程中的命名更新
 
 ## 构建说明
 
@@ -97,6 +119,9 @@ cmake --build .
 
 # 运行拓扑命名演示
 ./TopoNaming
+
+# 运行FreeCAD风格拓扑命名演示
+./TopoNamingFreeCAD
 ```
 
 ## 学习路径建议
@@ -105,6 +130,7 @@ cmake --build .
 2. **进阶**: 学习`Proj3d`，掌握3D几何和曲面操作
 3. **性能优化**: 通过`ProjParallel`了解并行计算在几何计算中的应用
 4. **高级主题**: 学习`TopoNaming`，理解参数化建模的核心挑战
+5. **专家级**: 学习`TopoNamingFreeCAD`，掌握FreeCAD的拓扑命名解决方案
 
 ## 拓扑命名问题详解
 
@@ -127,11 +153,30 @@ cmake --build .
 1. 基于几何特征的识别（位置、方向）
 2. 拓扑关联关系追踪
 3. 几何不变量使用
+4. **FreeCAD方案**: 基于几何哈希的稳定命名（见`TopoNamingFreeCAD.cpp`）
+
+## FreeCAD拓扑命名方案
+
+FreeCAD采用了创新的方法来解决拓扑命名问题：
+
+### 核心机制
+- **几何哈希**: 为每个拓扑元素基于其几何特征（面积、中心、法向等）计算唯一哈希值
+- **稳定追踪**: 相同几何产生相同哈希，即使在模型修改后也能追踪
+- **特征树**: 在参数化建模的特征历史中维护拓扑命名
+
+### 优势
+- 几何相似性保证命名稳定性
+- 支持复杂的特征历史操作
+- 可以追踪布尔运算后的拓扑元素
+
+详见`topoNamingFreeCAD.cpp`的实现和演示。
 
 ## 参考资源
 
 - [OpenCASCADE官方文档](https://dev.opencascade.org/doc)
 - [OpenCASCADE技术论坛](https://dev.opencascade.org/forums)
+- [FreeCAD Topological Naming Project](https://github.com/realthunder/FreeCAD_assembly3)
+- [FreeCAD Wiki - Topological Naming Problem](https://wiki.freecad.org/Topological_naming_problem)
 
 ## 许可证
 
