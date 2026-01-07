@@ -81,7 +81,7 @@ OpenCASCADE是一个开源的3D建模内核，广泛应用于CAD/CAM/CAE领域�
 2. **布尔运算**: 展示运算后通过几何特征追踪元素
 3. **特征历史**: 模拟多步骤建模过程中的命名更新
 
-### 6. ShapeSharing - Shape共享机制分析验证 ⭐ 最新
+### 6. ShapeSharing - Shape共享机制分析验证
 **文件**: `shapeSharing.cpp`
 
 演示了OpenCASCADE中形状共享机制的原理和应用。

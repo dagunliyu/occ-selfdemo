@@ -9,6 +9,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <sstream>
 #include <BRepPrimAPI_MakeBox.hxx>
 #include <BRepPrimAPI_MakeCylinder.hxx>
 #include <BRepAlgoAPI_Cut.hxx>
@@ -379,9 +380,9 @@ void DemoTShapeLocation()
     analyzer.PrintDetailedSharing(2);
     
     std::cout << "\n说明：" << std::endl;
-    std::cout << "BRepBuilderAPI_Transform的第三个参数(Standard_True)表示复制TShape。" << std::endl;
-    std::cout << "- True: 复制几何（不共享TShape）" << std::endl;
-    std::cout << "- False: 共享几何，仅修改Location（位置信息）" << std::endl;
+    std::cout << "BRepBuilderAPI_Transform的第三个参数控制是否复制几何：" << std::endl;
+    std::cout << "- Standard_True: 复制几何（不共享TShape）" << std::endl;
+    std::cout << "- Standard_False: 共享几何，仅修改Location（位置信息）" << std::endl;
     
     // 演示使用共享几何的变换
     std::cout << "\n\n使用共享几何的变换（copyGeom=False）：" << std::endl;
