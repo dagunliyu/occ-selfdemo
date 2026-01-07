@@ -49,6 +49,8 @@ private:
     
     // 将浮点数舍入到固定精度以确保哈希稳定性
     // 这避免了浮点精度差异导致相同几何产生不同哈希的问题
+    // 精度选择1e-6，与OCC默认精度（Precision::Confusion() ≈ 1e-7）相匹配
+    // 这确保在OCC认为相同的几何会产生相同的哈希
     double RoundForHash(double value, double precision = 1e-6) const
     {
         return std::round(value / precision) * precision;
@@ -66,10 +68,22 @@ private:
     {
         size_t hash = 0;
         
+        // 检查面是否有效
+        if (face.IsNull())
+        {
+            return hash;
+        }
+        
         // 计算面积
         GProp_GProps props;
         BRepGProp::SurfaceProperties(face, props);
         double area = props.Mass();
+        
+        // 跳过退化面（面积接近零）
+        if (area < 1e-10)
+        {
+            return hash;
+        }
         
         // 获取中心点
         gp_Pnt center = props.CentreOfMass();
@@ -103,6 +117,12 @@ private:
     {
         size_t hash = 0;
         
+        // 检查边是否有效和是否退化
+        if (edge.IsNull() || BRep_Tool::Degenerated(edge))
+        {
+            return hash;
+        }
+        
         // 添加类型标识避免与面、顶点冲突
         hash ^= std::hash<int>{}(2); // 类型标识：2=边
         
@@ -123,6 +143,12 @@ private:
     size_t ComputeVertexHash(const TopoDS_Vertex& vertex)
     {
         size_t hash = 0;
+        
+        // 检查顶点是否有效
+        if (vertex.IsNull())
+        {
+            return hash;
+        }
         
         // 添加类型标识避免与面、边冲突
         hash ^= std::hash<int>{}(3); // 类型标识：3=顶点
